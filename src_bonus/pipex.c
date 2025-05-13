@@ -1,5 +1,77 @@
 #include "../includes/pipex.h"
 
+char **path_extractor(char **envp)
+{
+	int		i;
+	char	**paths;
+
+	i = 0;
+	while (envp[i])
+	{
+		if (ft_strncmp(envp[i], "PATH=", 4) == 0)
+		{
+			paths = ft_split(envp[i] + 5,':');
+			return(paths);
+		}
+		i++;
+	}
+	return(NULL);
+}
+
+char *ft_strjoin_3(const char *s1, char connector, const char *s2)
+{
+	int		i;
+	int		j;
+	char	*res;
+
+	res = malloc((ft_strlen(s1) + 2 + ft_strlen(s2)) * sizeof(char));
+	i = 0;
+	while (s1[i])
+	{
+		res[i] = s1[i];
+		i++;
+	}
+	res[i] = connector;
+	i++;
+	j = 0;
+	while (s2[j])
+	{
+		res[i+j] = s2[j];
+		j++;
+	}
+	res[i+j] = 0;
+	return(res);
+}
+
+
+int	exec_command(char *command, char *envp[])
+{
+	int		i;
+	char 	**paths;
+	char 	*final_path;
+	char	**commands;
+
+	if (command[0] == 0)
+		exit(0);
+	paths = path_extractor(envp);
+	commands = ft_split(command, ' ');
+	i = 0;
+	while (paths[i])
+	{
+		final_path = ft_strjoin_3(paths[i], '/', commands[0]);
+		printf ("%s\n", final_path);
+		if (access(final_path, F_OK) == 0)
+		{
+			printf ("Here\n");
+			execve(final_path, commands, envp);
+			break;
+		}
+		free (final_path);
+		i++;
+	}
+	return (0);
+}
+
 int	open_fd(char *path, char option)
 {
 	int	fd;
@@ -16,7 +88,7 @@ int	open_fd(char *path, char option)
 	return (fd);
 }
 
-int main(int argc, char *argv[]/*, char *envp[]*/)
+int main(int argc, char *argv[], char *envp[])
 {
 	int	num;
 	int	fd[2];
@@ -37,6 +109,7 @@ int main(int argc, char *argv[]/*, char *envp[]*/)
 	}
 	while (num < argc - 2)
 	{
+		exec_command(argv[num], envp);
 		printf("This is the argv: %s\n", argv[num]);
 		num++;
 	}

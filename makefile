@@ -49,7 +49,7 @@ clean:
 	rm -rf $(OBJS_DIR)
 
 fclean: clean
-	rm -rf ${NAME}
+	rm -rf ${NAME} out*
 
 re: fclean ${NAME}
 
