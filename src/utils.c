@@ -99,31 +99,3 @@ int	executor(char *command, char *envp[])
 	return (0);
 }
 
-void	write_line(char *limit, int fd)
-{
-	char	*line;
-	char	*limitor;
-	size_t	size;
-
-	limitor = ft_strjoin(limit, "\n");
-	size = ft_strlen(limitor);
-	while (1)
-	{
-		write(1, "> ", 2);
-		line = get_next_line(0);
-		if (size == ft_strlen(line) && ft_strncmp(limitor, line, size) == 0)
-		{
-			free(line);
-			free(limitor);
-			close(fd);
-			exit(EXIT_SUCCESS);
-		}
-		if (write(fd, line, ft_strlen(line)) == -1)
-			perror("Writing lines");
-		free(line);
-	}
-	free(line);
-	free(limitor);
-	close(fd);
-	exit(EXIT_FAILURE);
-}
