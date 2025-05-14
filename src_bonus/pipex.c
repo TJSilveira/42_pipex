@@ -82,6 +82,8 @@ int	executor(char *command, char *envp[])
 		return (3);
 	}
 	pid = fork();
+	if (pid == -1)
+		exit(EXIT_FAILURE);
 	if (pid == 0)
 	{
 		close(pipe_fd[0]);
@@ -101,6 +103,63 @@ int	executor(char *command, char *envp[])
 	return (0);
 }
 
+void	write_line(char *limit, int fd)
+{
+	char	*line;
+	char	*limitor;
+	size_t	size;
+
+	limitor = ft_strjoin(limit, "\n");
+	size = ft_strlen(limitor);
+	while (1)
+	{
+		write(1, "> ", 2);
+		line = get_next_line(0);
+		if (size == ft_strlen(line) && ft_strncmp(limitor,line,size) == 0)
+		{
+			free(line);
+			free(limitor);
+			close(fd);
+			exit(EXIT_SUCCESS);
+		}
+		if (write(fd, line, ft_strlen(line)) == -1)
+			perror("Writing lines");
+		free(line);
+	}
+	free(line);
+	free(limitor);
+	close(fd);
+	exit(EXIT_FAILURE);
+}
+
+void	heredoc(char *argv[])
+{
+	int	pipe_fd[2];
+	int	pid;
+
+	if (pipe(pipe_fd) == -1)
+	{
+		perror("Laying down the pipe(s)");
+		exit(3);
+	}
+	pid = fork();
+	if (pid == -1)
+		exit(EXIT_FAILURE);	
+	if (pid == 0)
+	{
+		close(pipe_fd[0]);
+		write_line(argv[2], pipe_fd[1]);
+	}
+	else
+	{
+		close(pipe_fd[1]);
+		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+			perror("Duplicating read-end pipe to STDOUT\n");
+		close(pipe_fd[0]);
+		waitpid(pid, NULL, 0);
+	}
+}
+
 int	open_fd(char *path, char option)
 {
 	int	fd;
@@ -117,15 +176,37 @@ int	open_fd(char *path, char option)
 	return (fd);
 }
 
+int format_check(int argc, char *argv[])
+{
+	if (ft_strncmp(argv[1],"here_doc",8) == 0)
+	{
+		if (argc < 6)
+		{
+			ft_putstr_fd("Less than 6 arguments for here_doc option",2);
+			exit(EXIT_FAILURE);
+		}
+	}
+	else
+	{
+		if (argc < 5)
+		{
+			ft_putstr_fd("Less than 5 arguments provided\n",2);
+			exit(EXIT_FAILURE);
+		}
+	}
+	return (0);
+}
+
 int main(int argc, char *argv[], char *envp[])
 {
 	int	num;
 	int	fd[2];
 
+	format_check(argc, argv);
 	if (ft_strncmp(argv[1],"here_doc",8) == 0)
 	{
 		num = 3;
-		// add input function for here_doc
+		heredoc(argv);
 		fd[1] = open_fd(argv[argc - 1],'H');
 	}
 	else

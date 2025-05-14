@@ -18,6 +18,10 @@
 ./pipex ./tests/test1 "ls non_existent_file" "wc -l" output5.txt
 <./tests/test1 ls non_existent_file | wc -l > output5_sh.txt
 
+# Test that fails with one command
+./pipex ./tests/test1.txt "grep inet" output6.txt
+echo "Less than 5 arguments provided"
+
 # Test with non-existent input file
 #./pipex non_existent_file.txt "cat" "wc -l" output6.txt
 #<non_existent_file.txt cat | wc -l > output6_sh.txt

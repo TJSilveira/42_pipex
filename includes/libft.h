@@ -7,7 +7,16 @@
 #include <string.h>
 #include <limits.h>
 #include <ctype.h>
+#include <fcntl.h>
 #define ABS(n) (((n) < 0) * (-(n)) + ((n) >= 0) * (n))
+
+# ifndef FD_MAX
+#  define FD_MAX 512
+# endif
+
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 1024
+# endif
 
 typedef struct s_list
 {
@@ -60,5 +69,18 @@ void	ft_lstclear(t_list **lst, void (*del)(void*));
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *));
 void	ft_lstiter(t_list *lst, void (*f)(void *));
 void	ft_putstr_var_fd(char *s, int start, int end, int fd);
+
+/* Get Next line functions */
+char	*get_next_line(int fd);
+char	*new_line(char *buffer);
+char	*read_line(char *buffer);
+char	*read_buffer(int fd, char *buffer);
+
+/* Get Next Line Util functions */
+char	*ft_strchr(const char *s, int c);
+char	*ft_strjoin(char const *s1, char const *s2);
+char	*ft_substr(char const *s, unsigned int start, size_t len);
+size_t	ft_strlen(const char *s);
+char	*ft_strdup(const char *s);
 
 #endif
