@@ -51,23 +51,52 @@ int	exec_command(char *command, char *envp[])
 	char 	*final_path;
 	char	**commands;
 
-	if (command[0] == 0)
-		exit(0);
 	paths = path_extractor(envp);
+	if (paths == NULL)
+	{
+		ft_putstr_fd("Error: problem envp file path", 2);
+		return (1);
+	}
 	commands = ft_split(command, ' ');
 	i = 0;
 	while (paths[i])
 	{
 		final_path = ft_strjoin_3(paths[i], '/', commands[0]);
-		printf ("%s\n", final_path);
 		if (access(final_path, F_OK) == 0)
-		{
-			printf ("Here\n");
 			execve(final_path, commands, envp);
-			break;
-		}
 		free (final_path);
 		i++;
+	}
+	perror("exec_command function");
+	return (1);
+}
+
+int	executor(char *command, char *envp[])
+{
+	int	pipe_fd[2];
+	int	pid;
+
+	if (pipe(pipe_fd) == -1)
+	{
+		perror("Laying down the pipe(s)");
+		return (3);
+	}
+	pid = fork();
+	if (pid == 0)
+	{
+		close(pipe_fd[0]);
+		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
+			perror("Duplicating write-end pipe to STDOUT\n");
+		close(pipe_fd[1]);
+		exec_command(command, envp);
+	}
+	else
+	{
+		close(pipe_fd[1]);
+		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
+			perror("Duplicating read-end pipe to STDOUT\n");
+		close(pipe_fd[0]);
+		waitpid(pid, NULL, 0);
 	}
 	return (0);
 }
@@ -88,6 +117,11 @@ int	open_fd(char *path, char option)
 	return (fd);
 }
 
+int	heredoc()
+{
+
+}
+
 int main(int argc, char *argv[], char *envp[])
 {
 	int	num;
@@ -104,16 +138,16 @@ int main(int argc, char *argv[], char *envp[])
 		num = 2;
 		fd[0] = open_fd(argv[1],'I');
 		if (dup2(fd[0], STDIN_FILENO) == -1)
-			perror("Error: duplicating read-end pipe to STDIN\n");
+			perror("Duplicating read-end pipe to STDIN\n");
 		fd[1] = open_fd(argv[argc - 1],'O');
 	}
 	while (num < argc - 2)
 	{
-		exec_command(argv[num], envp);
-		printf("This is the argv: %s\n", argv[num]);
+		executor(argv[num], envp);
 		num++;
 	}
-	printf("This is the argv: %s\n", argv[num]);
-	// TODO: while loop with the creation of the different 
+	if (dup2(fd[1], STDOUT_FILENO) == -1)
+		perror("Duplicating write-end pipe to STDOUT\n");
+	exec_command(argv[num],envp);
 	return 0;
 }
