@@ -117,11 +117,6 @@ int	open_fd(char *path, char option)
 	return (fd);
 }
 
-int	heredoc()
-{
-
-}
-
 int main(int argc, char *argv[], char *envp[])
 {
 	int	num;
