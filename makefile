@@ -7,7 +7,6 @@ CFLAGS = -Wall -Werror -Wextra
 # Includes
 INCLUDES = -I ./includes/
 
-
 # Directories
 SRC_DIR = ./src/
 SRC_DIR_BONUS = ./src_bonus/
@@ -17,7 +16,8 @@ LIBFT_DIR = ./libft/
 # Source Files
 SRC_FILES = pipex.c
 
-SRC_FILES_BONUS = pipex.c
+SRC_FILES_BONUS = pipex.c \
+				utils.c
 
 # Object Files
 OBJS_FILES = $(SRC_FILES:.c=.o)
