@@ -50,7 +50,7 @@ clean:
 	rm -rf $(OBJS_DIR)
 
 fclean: clean
-	rm -rf ${NAME} out*
+	rm -rf ${NAME} out* valgrind*
 
 re: fclean ${NAME}
 
