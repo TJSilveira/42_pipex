@@ -40,6 +40,7 @@ int	main(int argc, char *argv[], char *envp[])
 	if (dup2(fd[0], STDIN_FILENO) == -1)
 		perror("Duplicating read-end pipe to STDIN\n");
 	fd[1] = open_fd(argv[argc - 1], 'O');
+	num = 1;
 	while (++num < argc - 2)
 		executor(argv[num], envp);
 	if (dup2(fd[1], STDOUT_FILENO) == -1)

@@ -4,7 +4,7 @@
 
 # Test with three commands
 ./pipex ./tests/test1 "grep as" "sort" "uniq" ./output2.txt
-echo "Please provide 5 arguments"
+echo "Expectd: Please provide 5 arguments"
 
 # Test with more complex commands
 ./pipex ./tests/test1 "cat -e" "grep a" ./output3.txt
@@ -20,7 +20,7 @@ echo "Please provide 5 arguments"
 
 # Test that fails with one command
 ./pipex ./tests/test1.txt "grep inet" ./output6.txt
-echo "Please provide 5 arguments"
+echo "Expected: Please provide 5 arguments"
 
 # Test with non-existent input file
 #./pipex non_existent_file.txt "cat" "wc -l" output6.txt
