@@ -49,7 +49,5 @@ int	main(int argc, char *argv[], char *envp[])
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
 		perror("Duplicating write-end pipe to STDOUT");
 	exec_command(argv[num], envp);
-	close(fd[0]);
-	close(fd[1]);
 	return (0);
 }

@@ -55,6 +55,7 @@ void	free_arrays(char **arrays)
 		free(arrays[i]);
 		i++;
 	}
+	free(arrays);
 }
 
 void	execve_checker(char *final_path, char **commands, char* envp[], char** paths)
