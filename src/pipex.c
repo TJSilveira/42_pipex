@@ -14,6 +14,9 @@ int	open_fd(char *path, char option)
 	return (fd);
 }
 
+/* This function has argv simply because it is needed in the bonus
+   section and I did not want to have multiple header files just
+   to accomodate to that change.                                 */
 int	format_check(int argc, char *argv[])
 {
 	if (argc != 5)
@@ -33,7 +36,6 @@ int	main(int argc, char *argv[], char *envp[])
 	int	fd[2];
 
 	format_check(argc, argv);
-	num = 1;
 	fd[0] = open_fd(argv[1], 'I');
 	if (dup2(fd[0], STDIN_FILENO) == -1)
 		perror("Duplicating read-end pipe to STDIN\n");
@@ -43,5 +45,7 @@ int	main(int argc, char *argv[], char *envp[])
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
 		perror("Duplicating write-end pipe to STDOUT\n");
 	exec_command(argv[num], envp);
+	close(fd[0]);
+	close(fd[1]);
 	return (0);
 }

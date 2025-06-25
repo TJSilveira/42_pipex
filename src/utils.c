@@ -92,7 +92,7 @@ int	executor(char *command, char *envp[])
 	{
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			perror("Duplicating read-end pipe to STDOUT\n");
+			perror("Duplicating read-end pipe to STDIN\n");
 		close(pipe_fd[0]);
 		waitpid(pid, NULL, 0);
 	}
