@@ -25,6 +25,8 @@ char	*ft_strjoin_3(const char *s1, char connector, const char *s2)
 	char	*res;
 
 	res = malloc((ft_strlen(s1) + 2 + ft_strlen(s2)) * sizeof(char));
+	if (!res)
+		exit(EXIT_FAILURE);
 	i = 0;
 	while (s1[i])
 	{

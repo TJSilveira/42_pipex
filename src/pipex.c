@@ -24,7 +24,7 @@ int	format_check(int argc, char *argv[])
 		ft_putstr_fd("Please provide 5 arguments\n", 2);
 		exit(EXIT_FAILURE);
 	}
-	if (ft_strcmp(argv[0],"./pipex") == 0)
+	if (ft_strncmp(argv[0], "./pipex", 7) == 0)
 		return (0);
 	else
 		return (0);
