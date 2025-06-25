@@ -10,7 +10,10 @@ int	open_fd(char *path, char option)
 	else if (option == 'O')
 		fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (fd == -1)
-		perror("Error: opening file\n");
+	{
+		perror("Error: opening file");
+		exit(EXIT_FAILURE);
+	}
 	return (fd);
 }
 
@@ -38,13 +41,13 @@ int	main(int argc, char *argv[], char *envp[])
 	format_check(argc, argv);
 	fd[0] = open_fd(argv[1], 'I');
 	if (dup2(fd[0], STDIN_FILENO) == -1)
-		perror("Duplicating read-end pipe to STDIN\n");
+		perror("Duplicating read-end pipe to STDIN");
 	fd[1] = open_fd(argv[argc - 1], 'O');
 	num = 1;
 	while (++num < argc - 2)
 		executor(argv[num], envp);
 	if (dup2(fd[1], STDOUT_FILENO) == -1)
-		perror("Duplicating write-end pipe to STDOUT\n");
+		perror("Duplicating write-end pipe to STDOUT");
 	exec_command(argv[num], envp);
 	close(fd[0]);
 	close(fd[1]);

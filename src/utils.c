@@ -45,6 +45,30 @@ char	*ft_strjoin_3(const char *s1, char connector, const char *s2)
 	return (res);
 }
 
+void	free_arrays(char **arrays)
+{
+	int	i;
+
+	i = 0;
+	while (arrays[i])
+	{
+		free(arrays[i]);
+		i++;
+	}
+}
+
+void	execve_checker(char *final_path, char **commands, char* envp[], char** paths)
+{
+	if (execve(final_path, commands, envp) == -1)
+	{
+		free(final_path);
+		free_arrays(commands);
+		free_arrays(paths);
+		perror("execve call:");
+		exit(EXIT_FAILURE);
+	}
+}
+
 int	exec_command(char *command, char *envp[])
 {
 	int		i;
@@ -56,7 +80,7 @@ int	exec_command(char *command, char *envp[])
 	if (paths == NULL)
 	{
 		ft_putstr_fd("Error: problem envp file path", 2);
-		return (1);
+		exit(EXIT_FAILURE);
 	}
 	commands = ft_split(command, ' ');
 	i = 0;
@@ -64,12 +88,14 @@ int	exec_command(char *command, char *envp[])
 	{
 		final_path = ft_strjoin_3(paths[i], '/', commands[0]);
 		if (access(final_path, F_OK) == 0)
-			execve(final_path, commands, envp);
+			execve_checker(final_path, commands, envp, paths);
 		free (final_path);
 		i++;
 	}
+	free_arrays(paths);
+	free_arrays(commands);
 	perror("exec_command function");
-	return (1);
+	exit(EXIT_FAILURE);
 }
 
 int	executor(char *command, char *envp[])

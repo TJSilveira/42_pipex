@@ -22,7 +22,7 @@ void	heredoc(char *argv[])
 	{
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			perror("Duplicating read-end pipe to STDOUT\n");
+			perror("Duplicating read-end pipe to STDOUT");
 		close(pipe_fd[0]);
 		waitpid(pid, NULL, 0);
 	}
@@ -40,7 +40,10 @@ int	open_fd(char *path, char option)
 	else if (option == 'H')
 		fd = open(path, O_WRONLY | O_APPEND | O_CREAT, 0777);
 	if (fd == -1)
-		perror("Error: opening file\n");
+	{
+		perror("Error: opening file");
+		exit(EXIT_FAILURE);
+	}
 	return (fd);
 }
 
@@ -82,7 +85,10 @@ int	main(int argc, char *argv[], char *envp[])
 		num = 1;
 		fd[0] = open_fd(argv[1], 'I');
 		if (dup2(fd[0], STDIN_FILENO) == -1)
-			perror("Duplicating read-end pipe to STDIN\n");
+		{
+			perror("Duplicating read-end pipe to STDIN");
+			exit(EXIT_FAILURE);
+		}
 		fd[1] = open_fd(argv[argc - 1], 'O');
 	}
 	while (++num < argc - 2)
