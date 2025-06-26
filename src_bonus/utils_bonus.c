@@ -1,9 +1,21 @@
 #include "../includes/pipex.h"
 
-void	error_handler(char *msg)
+void	error_handler(char *msg, char *file_name, int error_code)
 {
-	perror(msg);
-	exit(EXIT_FAILURE);
+	char *err_msg;
+
+	if (file_name == NULL)
+	{
+		perror(msg);
+		exit(error_code);
+	}
+	else
+	{
+		err_msg = ft_strjoin("./pipex: ", file_name);
+		perror(err_msg);
+		free(err_msg);
+		exit(error_code);
+	}
 }
 
 char	**path_extractor(char **envp)
@@ -32,7 +44,7 @@ char	*ft_strjoin_3(const char *s1, char connector, const char *s2)
 
 	res = malloc((ft_strlen(s1) + 2 + ft_strlen(s2)) * sizeof(char));
 	if (!res)
-		error_handler("Malloc problem in ft_strjoin_3 function");
+		error_handler("Malloc problem in ft_strjoin_3 function", NULL, 1);
 	i = 0;
 	while (s1[i])
 	{
@@ -66,16 +78,22 @@ void	free_arrays(char **arrays)
 
 void	execve_checker(char *final_path, char **commands, char* envp[], char** paths)
 {
-	if (execve(final_path, commands, envp) == -1)
+	if (execve(final_path, commands, envp) == -1 && final_path != NULL)
 	{
 		free(final_path);
 		free_arrays(commands);
 		free_arrays(paths);
-		error_handler("execve call:");
+		error_handler("execve call:", NULL, 1);
+	}
+	else if (execve(commands[0], commands, envp) == -1 && final_path == NULL)
+	{
+		free_arrays(commands);
+		free_arrays(paths);
+		error_handler("execve call:", NULL, 1);
 	}
 }
 
-void	exec_command(char *command, char *envp[])
+int	exec_command(char *command, char *envp[])
 {
 	int		i;
 	char	**paths;
@@ -84,7 +102,7 @@ void	exec_command(char *command, char *envp[])
 
 	paths = path_extractor(envp);
 	if (paths == NULL)
-		error_handler("Error: problem envp file path");
+		error_handler("Error: problem envp file path", NULL, 1);
 	commands = ft_split(command, ' ');
 	i = 0;
 	while (paths[i])
@@ -95,9 +113,12 @@ void	exec_command(char *command, char *envp[])
 		free (final_path);
 		i++;
 	}
+	if (access(commands[0], F_OK) == 0)
+		execve_checker(NULL, commands, envp, paths);
 	free_arrays(commands);
 	free_arrays(paths);
-	error_handler("exec_command function");
+	error_handler("command not found", NULL, 127);
+	return (0);
 }
 
 int	executor(char *command, char *envp[])
@@ -106,7 +127,7 @@ int	executor(char *command, char *envp[])
 	int	pid;
 
 	if (pipe(pipe_fd) == -1)
-		error_handler("Laying down the pipe(s)");
+		error_handler("Laying down the pipe(s)", NULL, 1);
 	pid = fork();
 	if (pid == -1)
 		exit(EXIT_FAILURE);
@@ -114,7 +135,7 @@ int	executor(char *command, char *envp[])
 	{
 		close(pipe_fd[0]);
 		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-			error_handler("Duplicating write-end pipe to STDOUT\n");
+			error_handler("Duplicating write-end pipe to STDOUT\n", NULL, 1);
 		close(pipe_fd[1]);
 		exec_command(command, envp);
 	}
@@ -122,7 +143,7 @@ int	executor(char *command, char *envp[])
 	{
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			error_handler("Duplicating read-end pipe to STDIN\n");
+			error_handler("Duplicating read-end pipe to STDIN\n", NULL, 1);
 		close(pipe_fd[0]);
 		waitpid(pid, NULL, 0);
 	}
@@ -149,7 +170,7 @@ void	write_line(char *limit, int fd)
 			exit(EXIT_SUCCESS);
 		}
 		if (write(fd, line, ft_strlen(line)) == -1)
-			error_handler("Writing lines");
+			error_handler("Writing lines", NULL, 1);
 		free(line);
 	}
 	free(line);
