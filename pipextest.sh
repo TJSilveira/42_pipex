@@ -1,18 +1,32 @@
 # Basic test with two commands
 ./pipex ./tests/test1.txt "grep inet" "wc -l" ./output1.txt
+status=$?
+echo $status
 <./tests/test1.txt grep inet | wc -l > output1_sh.txt
+status=$?
+echo $status
 
 # Test with three commands
 ./pipex ./tests/test1 "grep as" "sort" "uniq" ./output2.txt
+status=$?
+echo $status
 echo "Expectd: Please provide 5 arguments"
 
 # Test with more complex commands
 ./pipex ./tests/test1 "cat -e" "grep a" ./output3.txt
+status=$?
+echo $status
 <./tests/test1 cat -e | grep a > output3_sh.txt
+status=$?
+echo $status
 
 # Test with command that contains quotes
 ./pipex ./tests/test1 "echo \"Hello World\"" "wc -w" ./output4.txt
+status=$?
+echo $status
 <./tests/test1 echo \"Hello World\" | wc -w > output4_sh.txt
+status=$?
+echo $status
 
 # Test with a command that might fail
 ./pipex ./tests/test1 "ls non_existent_file" "wc -l" ./output5.txt
@@ -21,6 +35,14 @@ echo "Expectd: Please provide 5 arguments"
 # Test that fails with one command
 ./pipex ./tests/test1.txt "grep inet" ./output6.txt
 echo "Expected: Please provide 5 arguments"
+
+# Test that fails from nonexisting command
+./pipex ./tests/test1 "cat" "notexisting" ./output7.txt
+status=$?
+echo $status 
+< ./tests/test1 cat | notexisting >./output7.txt
+status=$?
+echo $status
 
 # Test with non-existent input file
 #./pipex non_existent_file.txt "cat" "wc -l" output6.txt

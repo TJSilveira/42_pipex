@@ -1,5 +1,11 @@
 #include "../includes/pipex.h"
 
+void	error_handler(char *msg)
+{
+	perror(msg);
+	exit(EXIT_FAILURE);
+}
+
 char	**path_extractor(char **envp)
 {
 	int		i;
@@ -26,7 +32,7 @@ char	*ft_strjoin_3(const char *s1, char connector, const char *s2)
 
 	res = malloc((ft_strlen(s1) + 2 + ft_strlen(s2)) * sizeof(char));
 	if (!res)
-		exit(EXIT_FAILURE);
+		error_handler("Malloc problem in ft_strjoin_3 function");
 	i = 0;
 	while (s1[i])
 	{
@@ -65,12 +71,11 @@ void	execve_checker(char *final_path, char **commands, char* envp[], char** path
 		free(final_path);
 		free_arrays(commands);
 		free_arrays(paths);
-		perror("execve call:");
-		exit(EXIT_FAILURE);
+		error_handler("execve call:");
 	}
 }
 
-int	exec_command(char *command, char *envp[])
+void	exec_command(char *command, char *envp[])
 {
 	int		i;
 	char	**paths;
@@ -79,10 +84,7 @@ int	exec_command(char *command, char *envp[])
 
 	paths = path_extractor(envp);
 	if (paths == NULL)
-	{
-		ft_putstr_fd("Error: problem envp file path", 2);
-		exit(EXIT_FAILURE);
-	}
+		error_handler("Error: problem envp file path");
 	commands = ft_split(command, ' ');
 	i = 0;
 	while (paths[i])
@@ -95,8 +97,7 @@ int	exec_command(char *command, char *envp[])
 	}
 	free_arrays(commands);
 	free_arrays(paths);
-	perror("exec_command function");
-	exit(EXIT_FAILURE);
+	error_handler("exec_command function");
 }
 
 int	executor(char *command, char *envp[])
@@ -105,7 +106,7 @@ int	executor(char *command, char *envp[])
 	int	pid;
 
 	if (pipe(pipe_fd) == -1)
-		perror("Laying down the pipe(s)");
+		error_handler("Laying down the pipe(s)");
 	pid = fork();
 	if (pid == -1)
 		exit(EXIT_FAILURE);
@@ -113,7 +114,7 @@ int	executor(char *command, char *envp[])
 	{
 		close(pipe_fd[0]);
 		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-			perror("Duplicating write-end pipe to STDOUT\n");
+			error_handler("Duplicating write-end pipe to STDOUT\n");
 		close(pipe_fd[1]);
 		exec_command(command, envp);
 	}
@@ -121,7 +122,7 @@ int	executor(char *command, char *envp[])
 	{
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			perror("Duplicating read-end pipe to STDOUT\n");
+			error_handler("Duplicating read-end pipe to STDIN\n");
 		close(pipe_fd[0]);
 		waitpid(pid, NULL, 0);
 	}
@@ -148,7 +149,7 @@ void	write_line(char *limit, int fd)
 			exit(EXIT_SUCCESS);
 		}
 		if (write(fd, line, ft_strlen(line)) == -1)
-			perror("Writing lines");
+			error_handler("Writing lines");
 		free(line);
 	}
 	free(line);
