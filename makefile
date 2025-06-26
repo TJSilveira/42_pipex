@@ -15,10 +15,12 @@ LIBFT_DIR = ./libft/
 
 # Source Files
 SRC_FILES = pipex.c \
-			utils.c
+			utils_1.c \
+			utils_2.c
 
 SRC_FILES_BONUS = pipex_bonus.c \
-				utils_bonus.c
+				utils_1_bonus.c \
+				utils_2_bonus.c
 
 # Object Files
 OBJS_FILES = $(SRC_FILES:.c=.o)

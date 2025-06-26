@@ -1,23 +1,5 @@
 #include "../includes/pipex.h"
 
-void	error_handler(char *msg, char *file_name, int error_code)
-{
-	char *err_msg;
-
-	if (file_name == NULL)
-	{
-		perror(msg);
-		exit(error_code);
-	}
-	else
-	{
-		err_msg = ft_strjoin("./pipex: ", file_name);
-		perror(err_msg);
-		free(err_msg);
-		exit(error_code);
-	}
-}
-
 char	**path_extractor(char **envp)
 {
 	int		i;
@@ -36,62 +18,18 @@ char	**path_extractor(char **envp)
 	return (NULL);
 }
 
-char	*ft_strjoin_3(const char *s1, char connector, const char *s2)
+void	execve_checker(char *f_path, char **comms, char *envp[], char **paths)
 {
-	int		i;
-	int		j;
-	char	*res;
-
-	res = malloc((ft_strlen(s1) + 2 + ft_strlen(s2)) * sizeof(char));
-	if (!res)
-		error_handler("Malloc problem in ft_strjoin_3 function", NULL, 1);
-	i = 0;
-	while (s1[i])
+	if (execve(f_path, comms, envp) == -1 && f_path != NULL)
 	{
-		res[i] = s1[i];
-		i++;
-	}
-	res[i] = connector;
-	i++;
-	j = 0;
-	while (s2[j])
-	{
-		res[i + j] = s2[j];
-		j++;
-	}
-	res[i + j] = 0;
-	return (res);
-}
-
-void	free_arrays(char **arrays)
-{
-	int	i;
-
-	i = 0;
-	while (arrays[i])
-	{
-		free(arrays[i]);
-		i++;
-	}
-	free(arrays);
-}
-
-/* The else if covers the cases where the user gives the full path to the
-   program. In those cases, you will not have a final_path that needs
-   to be freed. You just need to call commands[0] as the first element
-   of execve.*/
-void	execve_checker(char *final_path, char **commands, char* envp[], char** paths)
-{
-	if (execve(final_path, commands, envp) == -1 && final_path != NULL)
-	{
-		free(final_path);
-		free_arrays(commands);
+		free(f_path);
+		free_arrays(comms);
 		free_arrays(paths);
 		error_handler("execve call:", NULL, 1);
 	}
-	else if (execve(commands[0], commands, envp) == -1 && final_path == NULL)
+	else if (execve(comms[0], comms, envp) == -1 && f_path == NULL)
 	{
-		free_arrays(commands);
+		free_arrays(comms);
 		free_arrays(paths);
 		error_handler("execve call:", NULL, 1);
 	}
@@ -119,8 +57,8 @@ int	exec_command(char *command, char *envp[])
 	}
 	if (access(commands[0], F_OK) == 0)
 		execve_checker(NULL, commands, envp, paths);
-	free_arrays(paths);
 	free_arrays(commands);
+	free_arrays(paths);
 	error_handler("command not found", NULL, 127);
 	return (0);
 }
@@ -153,4 +91,3 @@ int	executor(char *command, char *envp[])
 	}
 	return (0);
 }
-
