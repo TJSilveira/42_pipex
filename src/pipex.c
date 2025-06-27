@@ -10,7 +10,7 @@ int	open_fd(char *path, char option)
 	else if (option == 'O')
 		fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (fd == -1 && option == 'I')
-		error_handler("Error: opening file", path, 128);
+		error_handler("Error: opening file", path, 0);
 	else if (fd == -1 && option == 'O')
 		error_handler("Error: opening file", NULL, 1);
 	return (fd);
