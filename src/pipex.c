@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: tsilveir <tsilveir@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/27 17:56:20 by tsilveir          #+#    #+#             */
+/*   Updated: 2025/06/27 17:56:23 by tsilveir         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "../includes/pipex.h"
 
 int	open_fd(char *path, char option)
@@ -22,7 +34,10 @@ int	open_fd(char *path, char option)
 int	format_check(int argc, char *argv[])
 {
 	if (argc != 5)
-		error_handler("Please provide 5 arguments", NULL, 1);
+	{
+		ft_putstr_fd("Please provide 5 arguments\n", 2);
+		exit (1);
+	}
 	if (ft_strncmp(argv[0], "./pipex", 7) == 0)
 		return (0);
 	else
