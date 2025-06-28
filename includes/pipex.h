@@ -15,6 +15,22 @@
 #include <fcntl.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#define READ 0
+#define WRITE 1
+
+typedef struct s_px
+{
+	pid_t	*pids;
+	int		**pipes;
+	int		num_pipes;
+	int		num_commands;
+	int		fd_input;
+	int		fd_output;
+	int		argc;
+	char	**argv;
+	char	**envp;
+}	t_px;
+
 
 /* utils_1.c*/
 char	**path_extractor(char **envp);
@@ -33,3 +49,8 @@ void	heredoc(char *argv[]);
 int		open_fd(char *path, char option);
 int		format_check(int argc, char *argv[]);
 int		main(int argc, char *argv[], char *envp[]);
+
+
+/* utils_1_v2 */
+int	executor_v2(t_px *px, int num);
+int	executor_heredoc(t_px *px, int i);

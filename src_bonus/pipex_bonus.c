@@ -12,6 +12,39 @@
 
 #include "../includes/pipex.h"
 
+void	create_pipeline(t_px *px)
+{
+	int	i;
+
+	px->pipes = malloc(sizeof(int*) * (px->argc - 4));
+	i = 0;
+	while (i < px->argc - 4)
+	{
+		px->pipes[i] = malloc(sizeof(int) * 2);
+		if (!px->pipes[i])
+			error_handler("malloc in pipe creation", NULL, EXIT_FAILURE);
+		if(pipe(px->pipes[i]) == -1)
+			error_handler("Pipe creation", NULL, EXIT_FAILURE);
+		i++;
+	}
+}
+
+t_px	*initialize_px(int argc, char *argv[], char *envp[])
+{
+	t_px	*px;
+
+	px = malloc(sizeof(t_px));
+	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+		px->pids = malloc(sizeof(pid_t) * (argc - 4));
+	else
+		px->pids = malloc(sizeof(pid_t) * (argc - 3));
+	px->argc = argc;
+	px->argv = argv;
+	px->envp = envp;
+	create_pipeline(px);
+	return(px);
+}
+
 void	write_line(char *limit, int fd)
 {
 	char	*line;
@@ -101,28 +134,54 @@ int	format_check(int argc, char *argv[])
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	int	num;
-	int	fd[2];
+	int		j;
+	int		num;
+	t_px	*px;
+	int		status;
 
 	format_check(argc, argv);
+	px = initialize_px(argc, argv, envp);
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
-		num = 2;
+		num = -1;
 		heredoc(argv);
-		fd[1] = open_fd(argv[argc - 1], 'H');
+		px->fd_output = open_fd(argv[argc - 1], 'H');
+		px->num_commands = argc - 4;
+		px->num_pipes = argc - 5;
+		
+		while (++num < px->num_commands)
+			executor_heredoc(px, num);
+		j = -1;
+		while (++j < px->num_pipes)
+		{
+			close(px->pipes[j][0]);
+			close(px->pipes[j][1]);
+		}
+		num = -1;
+		while (++num < px->num_commands)
+			waitpid(px->pids[num], &status, 0);
+		return (status);
 	}
 	else
 	{
-		num = 1;
-		fd[0] = open_fd(argv[1], 'I');
-		if (dup2(fd[0], STDIN_FILENO) == -1)
-			error_handler("Duplicating read-end pipe to STDIN", NULL, 1);
-		fd[1] = open_fd(argv[argc - 1], 'O');
+		num = -1;
+		px->fd_input = open_fd(argv[1], 'I');
+		px->fd_output = open_fd(argv[argc - 1], 'O');
+		px->num_commands = argc - 3;
+		px->num_pipes = argc - 4;
+
+		while (++num < px->num_commands)
+			executor_v2(px, num);
+		j = -1;
+		while (++j < px->num_pipes)
+		{
+			close(px->pipes[j][0]);
+			close(px->pipes[j][1]);
+		}
+		num = -1;
+		while (++num < px->num_commands)
+			waitpid(px->pids[num], &status, 0);
+		return (status);
 	}
-	while (++num < argc - 2)
-		executor(argv[num], envp);
-	if (dup2(fd[1], STDOUT_FILENO) == -1)
-		error_handler("Duplicating write-end pipe to STDOUT\n", NULL, 1);
-	exec_command(argv[num], envp);
-	return (0);
+	
 }
