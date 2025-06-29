@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsilveir <tsilveir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/17 10:49:35 by tsilveir          #+#    #+#             */
-/*   Updated: 2025/06/17 10:49:37 by tsilveir         ###   ########.fr       */
+/*   Created: 2025/06/17 10:49:57 by tsilveir          #+#    #+#             */
+/*   Updated: 2025/06/17 10:49:58 by tsilveir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,10 +28,7 @@ char	*new_line(char *buffer)
 	}
 	res = malloc(sizeof(char) * (ft_strlen(buffer) - i + 1));
 	if (!res)
-	{
-		free(res);
 		return (NULL);
-	}
 	i++;
 	j = 0;
 	while (buffer[i])
@@ -109,19 +106,24 @@ char	*read_buffer(int fd, char *buffer)
 char	*get_next_line(int fd)
 {
 	char		*line;
-	static char	*buffer[FD_MAX];
+	static char	*buffer;
 
-	if (fd < 0 || fd >= FD_MAX || BUFFER_SIZE <= 0)
-		return (NULL);
-	if (!buffer[fd])
-		buffer[fd] = ft_strdup("");
-	buffer[fd] = read_buffer(fd, buffer[fd]);
-	if (!buffer[fd])
+	if (fd == -1 && buffer)
 	{
-		free(buffer[fd]);
+		free(buffer);
 		return (NULL);
 	}
-	line = read_line(buffer[fd]);
-	buffer[fd] = new_line(buffer[fd]);
+	else if (fd < 0 || BUFFER_SIZE <= 0)
+		return (NULL);
+	if (!buffer)
+		buffer = ft_strdup("");
+	buffer = read_buffer(fd, buffer);
+	if (!buffer)
+	{
+		free(buffer);
+		return (NULL);
+	}
+	line = read_line(buffer);
+	buffer = new_line(buffer);
 	return (line);
 }

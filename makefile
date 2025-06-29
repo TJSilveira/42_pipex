@@ -21,7 +21,7 @@ SRC_FILES = pipex.c \
 SRC_FILES_BONUS = pipex_bonus.c \
 				utils_1_bonus.c \
 				utils_2_bonus.c \
-				utils_1_bonus_v2.c
+				utils_3_bonus.c
 
 # Object Files
 OBJS_FILES = $(SRC_FILES:.c=.o)

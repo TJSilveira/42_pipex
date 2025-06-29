@@ -47,59 +47,27 @@ void	execve_checker(char *f_path, char **comms, char *envp[], char **paths)
 	}
 }
 
-int	exec_command(char *command, char *envp[])
+void	create_pipeline(t_px *px)
 {
-	int		i;
-	char	**paths;
-	char	*final_path;
-	char	**commands;
+	int	i;
 
-	paths = path_extractor(envp);
-	if (paths == NULL)
-		error_handler("Error: problem envp file path", NULL, 1);
-	commands = ft_split(command, ' ');
+	px->pipes = malloc(sizeof(int *) * (px->num_pipes));
+	if (!px->pipes)
+		error_handler("malloc in pipe creation", NULL, EXIT_FAILURE);
 	i = 0;
-	while (paths[i])
+	while (i < px->num_pipes)
 	{
-		final_path = ft_strjoin_3(paths[i], '/', commands[0]);
-		if (access(final_path, F_OK) == 0)
-			execve_checker(final_path, commands, envp, paths);
-		free (final_path);
+		px->pipes[i] = malloc(sizeof(int) * 2);
+		if (!px->pipes[i])
+			error_handler("malloc in pipe creation", NULL, EXIT_FAILURE);
+		if (pipe(px->pipes[i]) == -1)
+			error_handler("Pipe creation", NULL, EXIT_FAILURE);
 		i++;
 	}
-	if (access(commands[0], F_OK) == 0)
-		execve_checker(NULL, commands, envp, paths);
-	free_arrays(commands);
-	free_arrays(paths);
-	error_handler("command not found", NULL, 127);
-	return (0);
 }
 
-int	executor(char *command, char *envp[])
+void	malloc_error_handler(void *ptr, int error_code)
 {
-	int	pipe_fd[2];
-	int	pid;
-
-	if (pipe(pipe_fd) == -1)
-		error_handler("Laying down the pipe(s)", NULL, 1);
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (pid == 0)
-	{
-		close(pipe_fd[0]);
-		if (dup2(pipe_fd[1], STDOUT_FILENO) == -1)
-			error_handler("Duplicating write-end pipe to STDOUT\n", NULL, 1);
-		close(pipe_fd[1]);
-		exec_command(command, envp);
-	}
-	else
-	{
-		close(pipe_fd[1]);
-		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			error_handler("Duplicating read-end pipe to STDIN\n", NULL, 1);
-		close(pipe_fd[0]);
-		waitpid(pid, NULL, 0);
-	}
-	return (0);
+	if (!ptr)
+		error_handler("Error with malloc", NULL, error_code);
 }
