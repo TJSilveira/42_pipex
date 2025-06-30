@@ -69,3 +69,19 @@ void	free_arrays(char **arrays)
 	}
 	free(arrays);
 }
+
+void	free_px(t_px *px)
+{
+	int	i;
+
+	i = -1;
+	while (++i < px->num_pipes)
+		free(px->pipes[i]);
+	free(px->pipes);
+	i = -1;
+	free(px->pids);
+	if (px->here_doc == 0)
+		close(px->fd_input);
+	close(px->fd_output);
+	free(px);
+}

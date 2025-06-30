@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils_3_bonus.c                                    :+:      :+:    :+:   */
+/*   utils_2.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: tsilveir <tsilveir@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/06/27 17:57:13 by tsilveir          #+#    #+#             */
-/*   Updated: 2025/06/27 17:57:15 by tsilveir         ###   ########.fr       */
+/*   Created: 2025/06/27 17:56:38 by tsilveir          #+#    #+#             */
+/*   Updated: 2025/06/27 17:56:39 by tsilveir         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,33 +87,19 @@ int	executor(t_px *px, int i)
 	return (0);
 }
 
-void	initialize_px_heredoc(t_px *px, int argc, char *argv[])
-{
-	px->pids = malloc(sizeof(pid_t) * (argc - 4));
-	px->fd_output = open_fd(argv[argc - 1], 'H');
-	px->num_commands = argc - 4;
-	px->here_doc = 1;
-	px->num_pipes = argc - 5;
-}
-
 t_px	*initialize_px(int argc, char *argv[], char *envp[])
 {
 	t_px	*px;
 
 	px = malloc(sizeof(t_px));
 	malloc_error_handler(px, EXIT_FAILURE);
-	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
-		initialize_px_heredoc(px, argc, argv);
-	else
-	{
-		px->pids = malloc(sizeof(pid_t) * (argc - 3));
-		px->fd_input = open_fd(argv[1], 'I');
-		px->fd_output = open_fd(argv[argc - 1], 'O');
-		px->num_commands = argc - 3;
-		px->num_pipes = argc - 4;
-		px->here_doc = 0;
-	}
-	malloc_error_handler(px->pids, EXIT_FAILURE);
+	px->pids = malloc(sizeof(pid_t) * (argc - 3));
+	malloc_error_handler(px->pids, EXIT_FAILURE);	
+	px->fd_input = open_fd(argv[1], 'I');
+	px->fd_output = open_fd(argv[argc - 1], 'O');
+	px->num_commands = argc - 3;
+	px->num_pipes = argc - 4;
+	px->here_doc = 0;
 	px->argc = argc;
 	px->argv = argv;
 	px->envp = envp;

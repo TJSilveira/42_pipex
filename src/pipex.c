@@ -46,18 +46,25 @@ int	format_check(int argc, char *argv[])
 
 int	main(int argc, char *argv[], char *envp[])
 {
-	int	num;
-	int	fd[2];
+	int		j;
+	int		num;
+	t_px	*px;
+	int		status;
 
 	format_check(argc, argv);
-	fd[0] = open_fd(argv[1], 'I');
-	if (dup2(fd[0], STDIN_FILENO) == -1)
-		error_handler("Duplicating read-end pipe to STDIN", NULL, 1);
-	fd[1] = open_fd(argv[argc - 1], 'O');
-	num = 1;
-	while (++num < argc - 2)
-		executor(argv[num], envp);
-	if (dup2(fd[1], STDOUT_FILENO) == -1)
-		error_handler("Duplicating write-end pipe to STDOUT", NULL, 1);
-	return (exec_command(argv[num], envp));
+	px = initialize_px(argc, argv, envp);
+	num = -1;
+	while (++num < px->num_commands)
+		executor(px, num);
+	j = -1;
+	while (++j < px->num_pipes)
+	{
+		close(px->pipes[j][0]);
+		close(px->pipes[j][1]);
+	}
+	num = -1;
+	while (++num < px->num_commands)
+		waitpid(px->pids[num], &status, 0);
+	free_px(px);
+	return (status);
 }

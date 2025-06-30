@@ -16,7 +16,8 @@ LIBFT_DIR = ./libft/
 # Source Files
 SRC_FILES = pipex.c \
 			utils_1.c \
-			utils_2.c
+			utils_2.c \
+			utils_3.c
 
 SRC_FILES_BONUS = pipex_bonus.c \
 				utils_1_bonus.c \
