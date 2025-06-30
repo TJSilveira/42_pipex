@@ -28,12 +28,12 @@ int	exec_command(t_px *px, int i)
 	{
 		final_path = ft_strjoin_3(paths[j], '/', commands[0]);
 		if (access(final_path, F_OK) == 0)
-			execve_checker(final_path, commands, px->envp, paths);
+			execve_checker(final_path, commands, paths, px);
 		free (final_path);
 		j++;
 	}
 	if (access(commands[0], F_OK) == 0)
-		execve_checker(NULL, commands, px->envp, paths);
+		execve_checker(NULL, commands, paths, px);
 	free_arrays(commands);
 	free_arrays(paths);
 	free_px(px);
@@ -89,8 +89,8 @@ int	executor(t_px *px, int i)
 
 void	initialize_px_heredoc(t_px *px, int argc, char *argv[])
 {
+	px->fd_output = open_fd(argv[argc - 1], 'H', px);
 	px->pids = malloc(sizeof(pid_t) * (argc - 4));
-	px->fd_output = open_fd(argv[argc - 1], 'H');
 	px->num_commands = argc - 4;
 	px->here_doc = 1;
 	px->num_pipes = argc - 5;
@@ -106,9 +106,9 @@ t_px	*initialize_px(int argc, char *argv[], char *envp[])
 		initialize_px_heredoc(px, argc, argv);
 	else
 	{
+		px->fd_input = open_fd(argv[1], 'I', px);
+		px->fd_output = open_fd(argv[argc - 1], 'O', px);
 		px->pids = malloc(sizeof(pid_t) * (argc - 3));
-		px->fd_input = open_fd(argv[1], 'I');
-		px->fd_output = open_fd(argv[argc - 1], 'O');
 		px->num_commands = argc - 3;
 		px->num_pipes = argc - 4;
 		px->here_doc = 0;

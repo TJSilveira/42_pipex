@@ -32,10 +32,9 @@ typedef struct s_px
 	char	**envp;
 }	t_px;
 
-
 /* utils_1.c*/
 char	**path_extractor(char **envp);
-void	execve_checker(char *f_path, char **comms, char *envp[], char **paths);
+void	execve_checker(char *f_path, char **comms, char **paths, t_px *px);
 void	create_pipeline(t_px *px);
 void	malloc_error_handler(void *ptr, int error_code);
 
@@ -55,7 +54,6 @@ t_px	*initialize_px(int argc, char *argv[], char *envp[]);
 /* pipex.c */
 void	write_line(char *limit, int fd);
 void	heredoc(char *argv[]);
-int		open_fd(char *path, char option);
+int		open_fd(char *path, char option, t_px *px);
 int		format_check(int argc, char *argv[]);
 int		main(int argc, char *argv[], char *envp[]);
-

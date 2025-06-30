@@ -12,7 +12,7 @@
 
 #include "../includes/pipex.h"
 
-int	open_fd(char *path, char option)
+int	open_fd(char *path, char option, t_px *px)
 {
 	int	fd;
 
@@ -22,9 +22,15 @@ int	open_fd(char *path, char option)
 	else if (option == 'O')
 		fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (fd == -1 && option == 'I')
+	{
+		free(px);
 		error_handler("Error: opening file", path, 0);
+	}
 	else if (fd == -1 && option == 'O')
+	{
+		free(px);
 		error_handler("Error: opening file", NULL, 1);
+	}
 	return (fd);
 }
 
@@ -66,5 +72,7 @@ int	main(int argc, char *argv[], char *envp[])
 	while (++num < px->num_commands)
 		waitpid(px->pids[num], &status, 0);
 	free_px(px);
-	return (status);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	return (EXIT_FAILURE);
 }

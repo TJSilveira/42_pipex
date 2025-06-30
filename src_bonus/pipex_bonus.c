@@ -64,7 +64,7 @@ void	heredoc(char *argv[])
 	}
 }
 
-int	open_fd(char *path, char option)
+int	open_fd(char *path, char option, t_px *px)
 {
 	int	fd;
 
@@ -76,9 +76,15 @@ int	open_fd(char *path, char option)
 	else if (option == 'H')
 		fd = open(path, O_WRONLY | O_APPEND | O_CREAT, 0777);
 	if (fd == -1 && option == 'I')
+	{
+		free_px(px);
 		error_handler("Error: opening file", path, 0);
+	}
 	else if (fd == -1)
+	{
+		free_px(px);
 		error_handler("Error: opening file", NULL, 1);
+	}
 	return (fd);
 }
 
@@ -121,5 +127,7 @@ int	main(int argc, char *argv[], char *envp[])
 	while (++num < px->num_commands)
 		waitpid(px->pids[num], &status, 0);
 	free_px(px);
-	return (status);
+	if (WIFEXITED(status))
+		return (WEXITSTATUS(status));
+	return (EXIT_FAILURE);
 }

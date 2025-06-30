@@ -34,19 +34,21 @@ char	**path_extractor(char **envp)
    program. In those cases, you will not have a final_path that needs
    to be freed. You just need to call commands[0] as the first element
    of execve.*/
-void	execve_checker(char *f_path, char **comms, char *envp[], char **paths)
+void	execve_checker(char *f_path, char **comms, char **paths, t_px *px)
 {
-	if (execve(f_path, comms, envp) == -1 && f_path != NULL)
+	if (execve(f_path, comms, px->envp) == -1 && f_path != NULL)
 	{
 		free(f_path);
 		free_arrays(comms);
 		free_arrays(paths);
+		free_px(px);
 		error_handler("execve call:", NULL, 1);
 	}
-	else if (execve(comms[0], comms, envp) == -1 && f_path == NULL)
+	else if (execve(comms[0], comms, px->envp) == -1 && f_path == NULL)
 	{
 		free_arrays(comms);
 		free_arrays(paths);
+		free_px(px);
 		error_handler("execve call:", NULL, 1);
 	}
 }

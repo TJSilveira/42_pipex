@@ -80,8 +80,7 @@ void	free_px(t_px *px)
 	free(px->pipes);
 	i = -1;
 	free(px->pids);
-	if (px->here_doc == 0)
-		close(px->fd_input);
+	close(px->fd_input);
 	close(px->fd_output);
 	free(px);
 }
