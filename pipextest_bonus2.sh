@@ -1,3 +1,4 @@
+!./bin/bash
 # Basic test with two commands
 NUM_TESTS=1
 
