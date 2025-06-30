@@ -80,12 +80,15 @@ void	free_px(t_px *px)
 {
 	int	i;
 
-	i = -1;
-	while (++i < px->num_pipes)
-		free(px->pipes[i]);
-	free(px->pipes);
-	i = -1;
-	free(px->pids);
+	if (px->pipes != NULL)
+	{
+		i = -1;
+		while (++i < px->num_pipes)
+			free(px->pipes[i]);
+		free(px->pipes);
+	}
+	if (px->pids != NULL)
+		free(px->pids);
 	if (px->here_doc == 0 && px->fd_input >= 0)
 		close(px->fd_input);
 	if (px->fd_output >= 0)

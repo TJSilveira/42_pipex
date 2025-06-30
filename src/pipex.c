@@ -12,7 +12,7 @@
 
 #include "../includes/pipex.h"
 
-int	open_fd(char *path, char option, t_px *px)
+int	open_fd(char *path, char option)
 {
 	int	fd;
 
@@ -23,8 +23,6 @@ int	open_fd(char *path, char option, t_px *px)
 		fd = open(path, O_WRONLY | O_TRUNC | O_CREAT, 0777);
 	if (fd == -1 && option == 'I')
 		perror("Error: opening file");
-	else if (fd == -1 && option == 'O')
-		error_handler("Error: opening file", NULL, 1, px);
 	return (fd);
 }
 

@@ -82,18 +82,23 @@ int	executor(t_px *px, int i)
 			close(px->pipes[j][0]);
 			close(px->pipes[j][1]);
 		}
+		if (px->argv[i + 2 + px->here_doc][0] == 0)
+			error_handler("No command ''", NULL, 1, px);
 		exec_command(px, i);
 	}
 	return (0);
 }
 
-void	initialize_px_heredoc(t_px *px, int argc, char *argv[])
+void	initialize_px_heredoc(t_px *px, int argc, char *argv[], char *envp[])
 {
-	px->fd_output = open_fd(argv[argc - 1], 'H', px);
-	px->pids = malloc(sizeof(pid_t) * (argc - 4));
 	px->num_commands = argc - 4;
 	px->here_doc = 1;
 	px->num_pipes = argc - 5;
+	px->argc = argc;
+	px->argv = argv;
+	px->envp = envp;
+	px->fd_output = open_fd(argv[argc - 1], 'H');
+	px->pids = malloc(sizeof(pid_t) * (argc - 4));
 }
 
 t_px	*initialize_px(int argc, char *argv[], char *envp[])
@@ -103,20 +108,20 @@ t_px	*initialize_px(int argc, char *argv[], char *envp[])
 	px = malloc(sizeof(t_px));
 	malloc_error_handler(px, EXIT_FAILURE);
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
-		initialize_px_heredoc(px, argc, argv);
+		initialize_px_heredoc(px, argc, argv, envp);
 	else
 	{
-		px->fd_input = open_fd(argv[1], 'I', px);
-		px->fd_output = open_fd(argv[argc - 1], 'O', px);
-		px->pids = malloc(sizeof(pid_t) * (argc - 3));
 		px->num_commands = argc - 3;
 		px->num_pipes = argc - 4;
 		px->here_doc = 0;
+		px->argc = argc;
+		px->argv = argv;
+		px->envp = envp;
+		px->fd_input = open_fd(argv[1], 'I');
+		px->fd_output = open_fd(argv[argc - 1], 'O');
+		px->pids = malloc(sizeof(pid_t) * (argc - 3));
 	}
 	malloc_error_handler(px->pids, EXIT_FAILURE);
-	px->argc = argc;
-	px->argv = argv;
-	px->envp = envp;
 	create_pipeline(px);
 	return (px);
 }

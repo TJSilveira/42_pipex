@@ -64,7 +64,7 @@ void	heredoc(char *argv[])
 	}
 }
 
-int	open_fd(char *path, char option, t_px *px)
+int	open_fd(char *path, char option)
 {
 	int	fd;
 
@@ -77,14 +77,12 @@ int	open_fd(char *path, char option, t_px *px)
 		fd = open(path, O_WRONLY | O_APPEND | O_CREAT, 0777);
 	if (fd == -1 && option == 'I')
 		perror("Error: opening file");
-	else if (fd == -1)
-		error_handler("Error: opening file", NULL, 1, px);
 	return (fd);
 }
 
 int	format_check(int argc, char *argv[])
 {
-	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
+	if (argc > 1 && ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
 		if (argc < 6)
 			error_handler("here_doc: Less than 6 arguments", NULL, 1, NULL);
@@ -92,7 +90,7 @@ int	format_check(int argc, char *argv[])
 	else
 	{
 		if (argc < 5)
-			error_handler("Less than 5 arguments provided\n", NULL, 1, NULL);
+			error_handler("Less than 5 arguments provided", NULL, 1, NULL);
 	}
 	return (0);
 }

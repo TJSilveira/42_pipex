@@ -97,4 +97,24 @@ echo 'Expected Status' $status
 echo -e '--------------------------\n'
 ((NUM_TESTS++))
 
+# Test that fails from nonexisting input file
+echo 'TEST' $NUM_TESTS
+./pipex "nonexistingfile" "cat -e" "ls" ./output9.txt
+status=$?
+echo 'Pipex Status' $status 
+< nonexistingfile cat -e | ls > ./output9sh.txt
+status=$?
+echo 'Expected Status' $status
+echo -e '--------------------------\n'
+((NUM_TESTS++))
 
+# Test with output file that has restrictions
+echo 'TEST' $NUM_TESTS
+./pipex ./tests/test1.txt "grep inet" "wc -l" .test/test2.txt
+status=$?
+echo 'Pipex Status' $status
+<./tests/test1.txt grep inet | wc -l > .test/test2.txt
+status=$?
+echo 'Expected Status' $status
+echo -e '--------------------------\n'
+((NUM_TESTS++))

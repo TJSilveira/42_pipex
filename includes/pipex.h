@@ -48,12 +48,12 @@ void	free_px(t_px *px);
 int		exec_command(t_px *px, int i);
 void	child_pipe_setup(t_px *px, int i);
 int		executor(t_px *px, int i);
-void	initialize_px_heredoc(t_px *px, int argc, char *argv[]);
+void	initialize_px_heredoc(t_px *px, int argc, char *argv[], char *envp[]);
 t_px	*initialize_px(int argc, char *argv[], char *envp[]);
 
 /* pipex.c */
 void	write_line(char *limit, int fd);
 void	heredoc(char *argv[]);
-int		open_fd(char *path, char option, t_px *px);
+int		open_fd(char *path, char option);
 int		format_check(int argc, char *argv[]);
 int		main(int argc, char *argv[], char *envp[]);

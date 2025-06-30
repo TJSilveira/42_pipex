@@ -82,6 +82,8 @@ int	executor(t_px *px, int i)
 			close(px->pipes[j][0]);
 			close(px->pipes[j][1]);
 		}
+		if (px->argv[i + 2 + px->here_doc][0] == 0)
+			error_handler("No command ''", NULL, 1, px);
 		exec_command(px, i);
 	}
 	return (0);
@@ -93,15 +95,19 @@ t_px	*initialize_px(int argc, char *argv[], char *envp[])
 
 	px = malloc(sizeof(t_px));
 	malloc_error_handler(px, EXIT_FAILURE);
-	px->fd_input = open_fd(argv[1], 'I', px);
-	px->fd_output = open_fd(argv[argc - 1], 'O', px);
-	px->pids = malloc(sizeof(pid_t) * (argc - 3));
-	malloc_error_handler(px->pids, EXIT_FAILURE);
+	px->pids = NULL;
+	px->pipes = NULL;
+	px->fd_input = -1;
+	px->fd_output = -1;
 	px->num_commands = argc - 3;
 	px->num_pipes = argc - 4;
 	px->argc = argc;
 	px->argv = argv;
 	px->envp = envp;
+	px->fd_input = open_fd(argv[1], 'I');
+	px->fd_output = open_fd(argv[argc - 1], 'O');
+	px->pids = malloc(sizeof(pid_t) * (argc - 3));
+	malloc_error_handler(px->pids, EXIT_FAILURE);
 	create_pipeline(px);
 	return (px);
 }
