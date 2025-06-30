@@ -12,13 +12,19 @@
 
 #include "../includes/pipex.h"
 
-void	error_handler(char *msg, char *file_name, int error_code)
+void	error_handler(char *msg, char *file_name, int error_code, t_px *px)
 {
 	char	*err_msg;
 
-	if (file_name == NULL)
+	if (file_name == NULL && px == NULL)
 	{
 		perror(msg);
+		exit(error_code);
+	}
+	else if (file_name == NULL && px != NULL)
+	{
+		perror(msg);
+		free_px(px);
 		exit(error_code);
 	}
 	else
@@ -38,7 +44,7 @@ char	*ft_strjoin_3(const char *s1, char connector, const char *s2)
 
 	res = malloc((ft_strlen(s1) + 2 + ft_strlen(s2)) * sizeof(char));
 	if (!res)
-		error_handler("Malloc problem in ft_strjoin_3 function", NULL, 1);
+		error_handler("Malloc problem in ft_strjoin_3", NULL, 1, NULL);
 	i = 0;
 	while (s1[i])
 	{
@@ -80,7 +86,9 @@ void	free_px(t_px *px)
 	free(px->pipes);
 	i = -1;
 	free(px->pids);
-	close(px->fd_input);
-	close(px->fd_output);
+	if (px->fd_input >= 0)
+		close(px->fd_input);
+	if (px->fd_input >= 0)
+		close(px->fd_output);
 	free(px);
 }

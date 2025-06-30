@@ -24,10 +24,7 @@ int	open_fd(char *path, char option, t_px *px)
 	if (fd == -1 && option == 'I')
 		perror("Error: opening file");
 	else if (fd == -1 && option == 'O')
-	{
-		free(px);
-		error_handler("Error: opening file", NULL, 1);
-	}
+		error_handler("Error: opening file", NULL, 1, px);
 	return (fd);
 }
 

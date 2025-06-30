@@ -37,15 +37,13 @@ void	execve_checker(char *f_path, char **comms, char **paths, t_px *px)
 		free(f_path);
 		free_arrays(comms);
 		free_arrays(paths);
-		free_px(px);
-		error_handler("execve call:", NULL, 1);
+		error_handler("execve call:", NULL, 1, px);
 	}
 	else if (execve(comms[0], comms, px->envp) == -1 && f_path == NULL)
 	{
 		free_arrays(comms);
 		free_arrays(paths);
-		free_px(px);
-		error_handler("execve call:", NULL, 1);
+		error_handler("execve call:", NULL, 1, px);
 	}
 }
 
@@ -55,15 +53,15 @@ void	create_pipeline(t_px *px)
 
 	px->pipes = malloc(sizeof(int *) * (px->num_pipes));
 	if (!px->pipes)
-		error_handler("malloc in pipe creation", NULL, EXIT_FAILURE);
+		error_handler("malloc in pipe creation", NULL, EXIT_FAILURE, NULL);
 	i = 0;
 	while (i < px->num_pipes)
 	{
 		px->pipes[i] = malloc(sizeof(int) * 2);
 		if (!px->pipes[i])
-			error_handler("malloc in pipe creation", NULL, EXIT_FAILURE);
+			error_handler("malloc in pipe creation", NULL, EXIT_FAILURE, NULL);
 		if (pipe(px->pipes[i]) == -1)
-			error_handler("Pipe creation", NULL, EXIT_FAILURE);
+			error_handler("Pipe creation", NULL, EXIT_FAILURE, NULL);
 		i++;
 	}
 }
@@ -71,5 +69,5 @@ void	create_pipeline(t_px *px)
 void	malloc_error_handler(void *ptr, int error_code)
 {
 	if (!ptr)
-		error_handler("Error with malloc", NULL, error_code);
+		error_handler("Error with malloc", NULL, error_code, NULL);
 }

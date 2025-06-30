@@ -33,7 +33,7 @@ void	write_line(char *limit, int fd)
 			exit(EXIT_SUCCESS);
 		}
 		if (write(fd, line, ft_strlen(line)) == -1)
-			error_handler("Writing lines", NULL, 1);
+			error_handler("Writing lines", NULL, 1, NULL);
 		free(line);
 	}
 	exit(EXIT_FAILURE);
@@ -45,10 +45,10 @@ void	heredoc(char *argv[])
 	int	pid;
 
 	if (pipe(pipe_fd) == -1)
-		error_handler("Laying down the pipe(s)", NULL, 1);
+		error_handler("Laying down the pipe(s)", NULL, 1, NULL);
 	pid = fork();
 	if (pid == -1)
-		error_handler("Fork creation", NULL, 1);
+		error_handler("Fork creation", NULL, 1, NULL);
 	if (pid == 0)
 	{
 		close(pipe_fd[0]);
@@ -58,7 +58,7 @@ void	heredoc(char *argv[])
 	{
 		close(pipe_fd[1]);
 		if (dup2(pipe_fd[0], STDIN_FILENO) == -1)
-			error_handler("Duplicating read-end pipe to STDOUT", NULL, 1);
+			error_handler("Duplicating read-end pipe to STDOUT", NULL, 1, NULL);
 		close(pipe_fd[0]);
 		waitpid(pid, NULL, 0);
 	}
@@ -76,15 +76,9 @@ int	open_fd(char *path, char option, t_px *px)
 	else if (option == 'H')
 		fd = open(path, O_WRONLY | O_APPEND | O_CREAT, 0777);
 	if (fd == -1 && option == 'I')
-	{
-		free_px(px);
-		error_handler("Error: opening file", path, 0);
-	}
+		perror("Error: opening file");
 	else if (fd == -1)
-	{
-		free_px(px);
-		error_handler("Error: opening file", NULL, 1);
-	}
+		error_handler("Error: opening file", NULL, 1, px);
 	return (fd);
 }
 
@@ -93,12 +87,12 @@ int	format_check(int argc, char *argv[])
 	if (ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
 		if (argc < 6)
-			error_handler("Less than 6 arguments for here_doc option", NULL, 1);
+			error_handler("here_doc: Less than 6 arguments", NULL, 1, NULL);
 	}
 	else
 	{
 		if (argc < 5)
-			error_handler("Less than 5 arguments provided\n", NULL, 1);
+			error_handler("Less than 5 arguments provided\n", NULL, 1, NULL);
 	}
 	return (0);
 }

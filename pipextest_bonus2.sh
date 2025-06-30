@@ -76,6 +76,7 @@ echo -e '--------------------------\n'
 
 # Test that fails from nonexisting input file
 echo 'TEST' $NUM_TESTS
+echo "Information that must be truncated properly" > ./output8.txt
 ./pipex ./tests/nonexisting "grep inet" "wc -l" ./output8.txt
 status=$?
 echo 'Pipex Status' $status 
@@ -85,9 +86,15 @@ echo 'Expected Status' $status
 echo -e '--------------------------\n'
 ((NUM_TESTS++))
 
-# Test with non-existent input file
-#./pipex non_existent_file.txt "cat" "wc -l" output6.txt
-#<non_existent_file.txt cat | wc -l > output6_sh.txt
+# Test that fails from nonexisting input file
+echo 'TEST' $NUM_TESTS
+./pipex "nonexistingfile" "cat -e" "ls" ./output9.txt
+status=$?
+echo 'Pipex Status' $status 
+< nonexistingfile cat -e | ls > ./output9sh.txt
+status=$?
+echo 'Expected Status' $status
+echo -e '--------------------------\n'
+((NUM_TESTS++))
 
-# Test with a command that reads from stdin
-#./pipex input.txt "cat" "grep pattern" output7.txt
+

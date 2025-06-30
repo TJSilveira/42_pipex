@@ -39,7 +39,7 @@ void	create_pipeline(t_px *px);
 void	malloc_error_handler(void *ptr, int error_code);
 
 /* utils_2.c*/
-void	error_handler(char *msg, char *file_name, int error_code);
+void	error_handler(char *msg, char *file_name, int error_code, t_px *px);
 char	*ft_strjoin_3(const char *s1, char connector, const char *s2);
 void	free_arrays(char **arrays);
 void	free_px(t_px *px);

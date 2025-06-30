@@ -21,8 +21,8 @@ int	exec_command(t_px *px, int i)
 
 	paths = path_extractor(px->envp);
 	if (paths == NULL)
-		error_handler("Error: problem envp file path", NULL, 1);
-	commands = ft_split(px->argv[i + 2 + px->here_doc], ' ');
+		error_handler("Error: problem envp file path", NULL, 1, NULL);
+	commands = ft_split(px->argv[i + 2], ' ');
 	j = 0;
 	while (paths[j])
 	{
@@ -37,7 +37,7 @@ int	exec_command(t_px *px, int i)
 	free_arrays(commands);
 	free_arrays(paths);
 	free_px(px);
-	error_handler("command not found", NULL, 127);
+	error_handler("command not found", NULL, 127, NULL);
 	return (0);
 }
 
@@ -45,24 +45,24 @@ void	child_pipe_setup(t_px *px, int i)
 {
 	if (i == 0)
 	{
-		if (px->here_doc == 0 && dup2(px->fd_input, STDIN_FILENO) == -1)
-			error_handler("Duplicating read pipe to STDIN", NULL, 1);
+		if (dup2(px->fd_input, STDIN_FILENO) == -1)
+			error_handler("Duplicating read pipe to STDIN", NULL, 1, px);
 		if (dup2(px->pipes[0][WRITE], STDOUT_FILENO) == -1)
-			error_handler("Duplicating write pipe to STDOUT\n", NULL, 1);
+			error_handler("Duplicating write pipe to STDOUT\n", NULL, 1, px);
 	}
 	else if (i < px->num_pipes)
 	{
 		if (dup2(px->pipes[i - 1][READ], STDIN_FILENO) == -1)
-			error_handler("Duplicating read pipe to STDIN", NULL, 1);
+			error_handler("Duplicating read pipe to STDIN", NULL, 1, px);
 		if (dup2(px->pipes[i][WRITE], STDOUT_FILENO) == -1)
-			error_handler("Duplicating write pipe to STDOUT\n", NULL, 1);
+			error_handler("Duplicating write pipe to STDOUT\n", NULL, 1, px);
 	}
 	else
 	{
 		if (dup2(px->pipes[i - 1][READ], STDIN_FILENO) == -1)
-			error_handler("Duplicating read pipe to STDIN", NULL, 1);
+			error_handler("Duplicating read pipe to STDIN", NULL, 1, px);
 		if (dup2(px->fd_output, STDOUT_FILENO) == -1)
-			error_handler("Duplicating write pipe to STDOUT\n", NULL, 1);
+			error_handler("Duplicating write pipe to STDOUT\n", NULL, 1, px);
 	}
 }
 
