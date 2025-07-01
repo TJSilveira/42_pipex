@@ -82,7 +82,7 @@ int	executor(t_px *px, int i)
 			close(px->pipes[j][0]);
 			close(px->pipes[j][1]);
 		}
-		if (px->argv[i + 2 + px->here_doc][0] == 0)
+		if (px->argv[i + 2][0] == 0)
 			error_handler("No command ''", NULL, 1, px);
 		exec_command(px, i);
 	}
