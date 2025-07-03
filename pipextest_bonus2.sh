@@ -59,7 +59,7 @@ echo -e '--------------------------\n'
 # Test that fails with one command
 echo 'TEST' $NUM_TESTS
 ./pipex ./tests/test1.txt "grep inet" ./output6.txt
-echo "Expected: Please provide 5 arguments"
+echo "Expected: Please provide 4 arguments"
 echo -e '--------------------------\n'
 ((NUM_TESTS++))
 

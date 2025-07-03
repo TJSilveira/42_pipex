@@ -85,12 +85,12 @@ int	format_check(int argc, char *argv[])
 	if (argc > 1 && ft_strncmp(argv[1], "here_doc", 8) == 0)
 	{
 		if (argc < 6)
-			error_handler("here_doc: Less than 6 arguments", NULL, 1, NULL);
+			error_handler("here_doc: Less than 5 arguments", NULL, 1, NULL);
 	}
 	else
 	{
 		if (argc < 5)
-			error_handler("Less than 5 arguments provided", NULL, 1, NULL);
+			error_handler("Less than 4 arguments provided", NULL, 1, NULL);
 	}
 	return (0);
 }

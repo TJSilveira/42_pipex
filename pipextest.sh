@@ -16,7 +16,7 @@ echo 'TEST' $NUM_TESTS
 ./pipex ./tests/test1 "grep as" "sort" "uniq" ./output2.txt
 status=$?
 echo 'Pipex Status' $status
-echo "Expectd: Please provide 5 arguments"
+echo "Expectd: Please provide 4 arguments"
 echo "Expected Status: 1"
 echo -e '--------------------------\n'
 ((NUM_TESTS++))
@@ -57,7 +57,7 @@ echo -e '--------------------------\n'
 # Test that fails with one command
 echo 'TEST' $NUM_TESTS
 ./pipex ./tests/test1.txt "grep inet" ./output6.txt
-echo "Expected: Please provide 5 arguments"
+echo "Expected: Please provide 4 arguments"
 echo -e '--------------------------\n'
 ((NUM_TESTS++))
 

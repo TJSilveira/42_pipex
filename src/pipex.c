@@ -33,7 +33,7 @@ int	format_check(int argc, char *argv[])
 {
 	if (argc != 5)
 	{
-		ft_putstr_fd("Please provide 5 arguments\n", 2);
+		ft_putstr_fd("Please provide 4 arguments\n", 2);
 		exit (1);
 	}
 	if (ft_strncmp(argv[0], "./pipex", 7) == 0)
